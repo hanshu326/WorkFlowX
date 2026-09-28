@@ -1,0 +1,552 @@
+ {% extends "base.html" %}
+
+{% block title %}
+Analytics - WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                📊 Analytics Dashboard
+            </h2>
+
+            <p class="text-muted mb-0">
+                Monitor projects, tasks and team performance
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('main.dashboard') }}"
+            class="btn btn-outline-secondary">
+
+            ← Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- ================= SUMMARY CARDS ================= -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Total Tasks
+                    </p>
+
+                    <h2 class="fw-bold">
+                        {{ total_tasks }}
+                    </h2>
+
+                    <small class="text-muted">
+                        All assigned tasks
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Completed Tasks
+                    </p>
+
+                    <h2 class="fw-bold text-success">
+                        {{ completed_tasks }}
+                    </h2>
+
+                    <small class="text-muted">
+                        Successfully completed
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Overdue Tasks
+                    </p>
+
+                    <h2 class="fw-bold text-danger">
+                        {{ overdue_tasks }}
+                    </h2>
+
+                    <small class="text-muted">
+                        Need attention
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Overall Completion
+                    </p>
+
+                    <h2 class="fw-bold text-primary">
+                        {{ completion_percentage }}%
+                    </h2>
+
+                    <div class="progress mt-3" style="height: 8px;">
+
+                        <div
+                            class="progress-bar"
+                            role="progressbar"
+                            style="width: {{ completion_percentage }}%;">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= TASK STATUS ================= -->
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-7">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-4">
+                        Task Status Overview
+                    </h5>
+
+                    <canvas id="taskStatusChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PROJECT SUMMARY ================= -->
+
+        <div class="col-md-5">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-4">
+                        Project Overview
+                    </h5>
+
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <span>
+                            Total Projects
+                        </span>
+
+                        <strong>
+                            {{ total_projects }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="progress mb-4" style="height: 8px;">
+
+                        <div
+                            class="progress-bar"
+                            style="width: 100%;">
+                        </div>
+
+                    </div>
+
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <span>
+                            Active Projects
+                        </span>
+
+                        <strong class="text-success">
+                            {{ active_projects }}
+                        </strong>
+
+                    </div>
+
+
+                    {% if total_projects > 0 %}
+
+                        {% set project_percentage =
+                            (active_projects / total_projects * 100)|round|int %}
+
+                    {% else %}
+
+                        {% set project_percentage = 0 %}
+
+                    {% endif %}
+
+
+                    <div
+                        class="progress"
+                        style="height: 8px;">
+
+                        <div
+                            class="progress-bar bg-success"
+                            style="width: {{ project_percentage }}%;">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= EMPLOYEE WORKLOAD ================= -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h5 class="fw-bold mb-0">
+                    👥 Employee Workload
+                </h5>
+
+                <span class="text-muted small">
+                    Task distribution
+                </span>
+
+            </div>
+
+
+            {% if employee_workload %}
+
+            <div class="table-responsive">
+
+                <table class="table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Employee
+                            </th>
+
+                            <th>
+                                Total Tasks
+                            </th>
+
+                            <th>
+                                Completed
+                            </th>
+
+                            <th>
+                                Progress
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for employee in employee_workload %}
+
+                        <tr>
+
+                            <td class="fw-semibold">
+
+                                {{ employee.name }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ employee.total }}
+
+                            </td>
+
+
+                            <td class="text-success">
+
+                                {{ employee.completed }}
+
+                            </td>
+
+
+                            <td style="width: 35%;">
+
+                                {% if employee.total > 0 %}
+
+                                    {% set employee_percentage =
+                                        (employee.completed / employee.total * 100)|round|int %}
+
+                                {% else %}
+
+                                    {% set employee_percentage = 0 %}
+
+                                {% endif %}
+
+
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <div
+                                        class="progress flex-grow-1"
+                                        style="height: 8px;">
+
+                                        <div
+                                            class="progress-bar bg-success"
+                                            style="width: {{ employee_percentage }}%;">
+
+                                        </div>
+
+                                    </div>
+
+                                    <small class="text-muted">
+
+                                        {{ employee_percentage }}%
+
+                                    </small>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+                <div class="text-center text-muted py-4">
+
+                    No employee workload data available.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= STATUS DETAILS ================= -->
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        TODO
+                    </small>
+
+                    <h3 class="fw-bold mt-2">
+                        {{ todo_tasks }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        IN PROGRESS
+                    </small>
+
+                    <h3 class="fw-bold mt-2">
+                        {{ in_progress_tasks }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        REVIEW
+                    </small>
+
+                    <h3 class="fw-bold mt-2">
+                        {{ review_tasks }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <small class="text-muted">
+                        COMPLETED
+                    </small>
+
+                    <h3 class="fw-bold text-success mt-2">
+                        {{ completed_tasks }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- ================= CHART JS ================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div
+    id="taskData"
+    data-todo="{{ todo_tasks }}"
+    data-progress="{{ in_progress_tasks }}"
+    data-review="{{ review_tasks }}"
+    data-completed="{{ completed_tasks }}">
+</div>
+
+<script>
+
+const taskData = document.getElementById("taskData");
+
+const todoTasks = Number(taskData.dataset.todo);
+const progressTasks = Number(taskData.dataset.progress);
+const reviewTasks = Number(taskData.dataset.review);
+const completedTasks = Number(taskData.dataset.completed);
+
+const ctx = document.getElementById("taskStatusChart");
+
+new Chart(ctx, {
+
+    type: "doughnut",
+
+    data: {
+
+        labels: [
+            "TODO",
+            "IN PROGRESS",
+            "REVIEW",
+            "COMPLETED"
+        ],
+
+        datasets: [{
+            label: "Tasks",
+
+            data: [
+                todoTasks,
+                progressTasks,
+                reviewTasks,
+                completedTasks
+            ],
+
+            borderWidth: 1
+        }]
+
+    },
+
+    options: {
+
+        responsive: true,
+
+        plugins: {
+
+            legend: {
+                position: "bottom"
+            }
+
+        }
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

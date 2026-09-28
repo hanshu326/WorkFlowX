@@ -1,0 +1,211 @@
+ {% extends "base.html" %}
+
+{% block title %}
+Create Task | WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-section">
+
+    <div class="mb-4">
+        <h2>Create New Task</h2>
+
+        <p class="text-muted">
+            Create and assign a task to a team member.
+        </p>
+    </div>
+
+    <form method="POST">
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}">
+
+        <!-- Task Title -->
+        <div class="mb-3">
+            <label class="form-label">Task Title</label>
+
+            <input
+                type="text"
+                name="title"
+                class="form-control"
+                placeholder="Enter task title"
+                required>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+
+            <textarea
+                name="description"
+                class="form-control"
+                rows="4"
+                placeholder="Describe the task"></textarea>
+        </div>
+
+        <div class="row">
+
+            <!-- Project -->
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Project
+                </label>
+
+                <select
+                    name="project_id"
+                    class="form-select"
+                    required>
+
+                    <option value="">
+                        Select Project
+                    </option>
+
+                    {% for project in projects %}
+
+                    <option value="{{ project.id }}">
+                        {{ project.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <!-- Assign To -->
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Assign To
+                </label>
+
+                <select
+                    name="assigned_to"
+                    class="form-select"
+                    required>
+
+                    <option value="">
+                        Select Employee
+                    </option>
+
+                    {% for user in users %}
+
+                    <option value="{{ user.id }}">
+                        {{ user.name }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <!-- Priority -->
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                    Priority
+                </label>
+
+                <select
+                    name="priority"
+                    class="form-select">
+
+                    <option value="LOW">
+                        Low
+                    </option>
+
+                    <option value="MEDIUM" selected>
+                        Medium
+                    </option>
+
+                    <option value="HIGH">
+                        High
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- Status -->
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                    Status
+                </label>
+
+                <select
+                    name="status"
+                    class="form-select">
+
+                    <option value="TODO" selected>
+                        Todo
+                    </option>
+
+                    <option value="IN PROGRESS">
+                        In Progress
+                    </option>
+
+                    <option value="REVIEW">
+                        Review
+                    </option>
+
+                    <option value="COMPLETED">
+                        Completed
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- Deadline -->
+            <div class="col-md-4 mb-3">
+
+                <label class="form-label">
+                    Deadline
+                </label>
+
+                <input
+                    type="date"
+                    name="deadline"
+                    class="form-control"
+                    required>
+
+            </div>
+
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-4">
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                Create Task
+
+            </button>
+
+            <a
+                href="{{ url_for('main.tasks') }}"
+                class="btn btn-secondary">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

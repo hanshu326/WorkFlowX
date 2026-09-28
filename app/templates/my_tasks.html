@@ -1,0 +1,353 @@
+ 
+{% extends "base.html" %}
+
+{% block title %}
+My Tasks | WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+
+    <h1>My Tasks</h1>
+
+    <p class="text-muted">
+        Tasks assigned to you.
+    </p>
+
+</div>
+
+<div class="dashboard-section">
+
+    {% if tasks %}
+
+        <div class="table-responsive">
+
+            <table class="table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Project</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Progress</th>
+                        <th>Deadline</th>
+                        <th>Work Update</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for task in tasks %}
+
+                    <tr>
+
+                        <!-- TASK -->
+
+                        <td>
+
+                            <strong>
+                                {{ task.title }}
+                            </strong>
+
+                            {% if task.description %}
+
+                                <br>
+
+                                <small class="text-muted">
+                                    {{ task.description }}
+                                </small>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- PROJECT -->
+
+                        <td>
+
+                            {% if task.project %}
+
+                                {{ task.project.name }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- PRIORITY -->
+
+                        <td>
+
+                            {% if task.priority == "HIGH" %}
+
+                                <span class="badge bg-danger">
+                                    High
+                                </span>
+
+                            {% elif task.priority == "MEDIUM" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    Medium
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-success">
+                                    Low
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('main.update_task_status', task_id=task.id) }}">
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}">
+
+                                <select
+                                    name="status"
+                                    class="form-select form-select-sm"
+                                    onchange="this.form.submit()">
+
+                                    <option
+                                        value="TODO"
+                                        {% if task.status == "TODO" %}selected{% endif %}>
+                                        Todo
+                                    </option>
+
+                                    <option
+                                        value="IN PROGRESS"
+                                        {% if task.status == "IN PROGRESS" %}selected{% endif %}>
+                                        In Progress
+                                    </option>
+
+                                    <option
+                                        value="REVIEW"
+                                        {% if task.status == "REVIEW" %}selected{% endif %}>
+                                        Review
+                                    </option>
+
+                                    <option
+                                        value="COMPLETED"
+                                        {% if task.status == "COMPLETED" %}selected{% endif %}>
+                                        Completed
+                                    </option>
+
+                                </select>
+
+                            </form>
+
+                        </td>
+
+
+                        <!-- PROGRESS -->
+
+                        <td style="min-width: 180px;">
+
+                            <div class="d-flex justify-content-between mb-1">
+
+                                <small class="text-muted">
+                                    Progress
+                                </small>
+
+                                <small class="fw-semibold">
+                                    {{ task.progress or 0 }}%
+                                </small>
+
+                            </div>
+
+
+                            <!-- PROGRESS BAR -->
+
+                            <div
+                                class="progress mb-2"
+                                style="height: 7px;">
+
+                                <div
+                                    class="progress-bar
+                                    {% if (task.progress or 0) == 100 %}
+                                        bg-success
+                                    {% elif (task.progress or 0) >= 75 %}
+                                        bg-info
+                                    {% elif (task.progress or 0) >= 50 %}
+                                        bg-primary
+                                    {% else %}
+                                        bg-secondary
+                                    {% endif %}"
+                                    role="progressbar"
+                                    style="width: {{ task.progress or 0 }}%;"
+                                    aria-valuenow="{{ task.progress or 0 }}"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100">
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- UPDATE PROGRESS -->
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('main.update_task_progress', task_id=task.id) }}">
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}">
+
+                                <div class="input-group input-group-sm">
+
+                                    <input
+                                        type="number"
+                                        name="progress"
+                                        class="form-control"
+                                        min="0"
+                                        max="100"
+                                        value="{{ task.progress or 0 }}"
+                                        required>
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline-primary">
+
+                                        Update
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </td>
+
+
+                        <!-- DEADLINE -->
+
+                        <td>
+
+                            {{ task.deadline or "—" }}
+
+                        </td>
+
+
+                        <!-- WORK UPDATE -->
+
+                        <td>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for('main.add_task_update', task_id=task.id) }}">
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}">
+
+                                <textarea
+                                    name="message"
+                                    class="form-control form-control-sm mb-2"
+                                    rows="2"
+                                    placeholder="Write your work update..."
+                                    required></textarea>
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-primary">
+
+                                    Add Update
+
+                                </button>
+
+                            </form>
+
+                            <!-- RECENT WORK UPDATES -->
+
+                      {% if task_updates.get(task.id) %}
+
+                         <div class="mt-3">
+
+                            <small class="fw-bold text-muted">
+                                Recent Updates
+                            </small>
+
+                            {% for update in task_updates.get(task.id, [])[:2] %}
+
+                               <div class="border rounded p-2 mt-2">
+
+                                <small>
+                                {{ update.message }}
+                                </small>
+
+                                <br>
+
+                                <small class="text-muted">
+                                    {{ update.created_at }}
+                                </small>
+
+                            </div>
+
+                        {% endfor %}
+
+                     </div>
+
+              {% endif %}
+
+                        </td>
+
+                        <br>
+
+                        <a
+                            href="{{ url_for('main.task_details', task_id=task.id) }}"
+                            class="btn btn-sm btn-outline-secondary">
+
+                            View Details
+
+                        </a>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="text-center py-5">
+
+            <h4>
+                No tasks assigned
+            </h4>
+
+            <p class="text-muted">
+                You don't have any tasks yet.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

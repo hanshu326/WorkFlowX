@@ -1,0 +1,146 @@
+ {% extends "base.html" %}
+
+{% block title %}
+Edit Project | WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-section">
+
+    <h2>Edit Project</h2>
+
+    <form method="POST" class="mt-4">
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Project Name
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                value="{{ project.name }}"
+                required>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Description
+            </label>
+
+            <textarea
+                name="description"
+                class="form-control"
+                rows="4">{{ project.description }}</textarea>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    name="start_date"
+                    class="form-control"
+                    value="{{ project.start_date }}"
+                    required>
+
+            </div>
+
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Deadline
+                </label>
+
+                <input
+                    type="date"
+                    name="deadline"
+                    class="form-control"
+                    value="{{ project.deadline }}"
+                    required>
+
+            </div>
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Status
+            </label>
+
+            <select
+                name="status"
+                class="form-select">
+
+                <option
+                    value="PLANNED"
+                    {% if project.status == "PLANNED" %}selected{% endif %}>
+                    Planned
+                </option>
+
+                <option
+                    value="ACTIVE"
+                    {% if project.status == "ACTIVE" %}selected{% endif %}>
+                    Active
+                </option>
+
+                <option
+                    value="ON HOLD"
+                    {% if project.status == "ON HOLD" %}selected{% endif %}>
+                    On Hold
+                </option>
+
+                <option
+                    value="COMPLETED"
+                    {% if project.status == "COMPLETED" %}selected{% endif %}>
+                    Completed
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+
+            Update Project
+
+        </button>
+
+
+        <a
+            href="{{ url_for('main.projects') }}"
+            class="btn btn-secondary">
+
+            Cancel
+
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

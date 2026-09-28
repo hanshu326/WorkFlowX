@@ -1,0 +1,894 @@
+ {% extends "base.html" %}
+
+{% block title %}
+Dashboard | WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<!-- ================= HEADER ================= -->
+
+<div class="mb-4">
+
+    <h1>
+        Welcome, {{ name }} 👋
+    </h1>
+
+    <p class="text-muted">
+        Here's what's happening in your workspace.
+    </p>
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- ================= ADMIN DASHBOARD =============== -->
+<!-- ================================================= -->
+
+{% if session.get("role", "")|lower == "admin" %}
+
+<div class="alert alert-primary">
+
+    <strong>Admin Dashboard</strong>
+
+    <br>
+
+    You have full access to projects, tasks and team management.
+
+</div>
+
+
+<!-- ================= ADMIN CARDS ================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Total Projects -->
+
+    <div class="col-md-3">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Total Projects
+            </h6>
+
+            <h2>
+                {{ total_projects }}
+            </h2>
+
+            <a
+                href="{{ url_for('main.projects') }}"
+                class="btn btn-sm btn-outline-primary mt-2">
+
+                View Projects
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Tasks -->
+
+    <div class="col-md-3">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Total Tasks
+            </h6>
+
+            <h2>
+                {{ total_tasks }}
+            </h2>
+
+            <a
+                href="{{ url_for('main.tasks') }}"
+                class="btn btn-sm btn-outline-primary mt-2">
+
+                View Tasks
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Employees -->
+
+    <div class="col-md-3">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Total Employees
+            </h6>
+
+            <h2>
+                {{ total_employees }}
+            </h2>
+
+            <a
+                href="{{ url_for('main.employees') }}"
+                class="btn btn-sm btn-outline-primary mt-2">
+
+                View Employees
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Active Projects -->
+
+    <div class="col-md-3">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Active Projects
+            </h6>
+
+            <h2>
+                {{ active_projects }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= TASK STATUS ================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Completed Tasks -->
+
+    <div class="col-md-6">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Completed Tasks
+            </h6>
+
+            <h2>
+                {{ completed_tasks }}
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pending Tasks -->
+
+    <div class="col-md-6">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Pending Tasks
+            </h6>
+
+            <h2>
+                {{ pending_tasks }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- ================= OVERALL PROGRESS ================= -->
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+                <h5 class="fw-bold mb-1">Overall Task Progress</h5>
+                <small class="text-muted">
+                    {{ completed_tasks }} of {{ total_tasks }} tasks completed
+                </small>
+            </div>
+
+            <h4 class="fw-bold mb-0">
+                {{ overall_progress }}%
+            </h4>
+        </div>
+
+        <div class="progress" style="height: 12px;">
+            <div
+                class="progress-bar
+                {% if overall_progress == 100 %}
+                    bg-success
+                {% elif overall_progress >= 75 %}
+                    bg-info
+                {% elif overall_progress >= 50 %}
+                    bg-primary
+                {% else %}
+                    bg-secondary
+                {% endif %}"
+                role="progressbar"
+                style="width: {{ overall_progress }}%;"
+                aria-valuenow="{{ overall_progress }}"
+                aria-valuemin="0"
+                aria-valuemax="100">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= ADMIN RECENT TASKS ================= -->
+
+<div class="dashboard-section mb-4">
+
+    <h3>
+        Recent Tasks
+    </h3>
+
+    <p class="text-muted">
+        Latest tasks in the workspace.
+    </p>
+
+
+    {% if recent_tasks %}
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>Task</th>
+                    <th>Project</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for task in recent_tasks %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ task.title }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        {% if task.project %}
+                            {{ task.project.name }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ task.priority }}
+                    </td>
+
+
+                    <td>
+                        {{ task.status }}
+                    </td>
+
+
+                    <td>
+                        {{ task.deadline or "—" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <p class="text-muted">
+        No tasks available.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- ================= MANAGER DASHBOARD ============= -->
+<!-- ================================================= -->
+
+{% elif session.get("role", "")|lower == "manager" %}
+
+<div class="alert alert-warning">
+
+    <strong>Manager Dashboard</strong>
+
+    <br>
+
+    Manage projects and assigned workspace tasks.
+
+</div>
+
+
+<!-- ================= MANAGER CARDS ================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- Projects -->
+
+    <div class="col-md-4">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Projects
+            </h6>
+
+            <h2>
+                {{ total_projects }}
+            </h2>
+
+            <a
+                href="{{ url_for('main.projects') }}"
+                class="btn btn-sm btn-outline-primary mt-2">
+
+                View Projects
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Tasks -->
+
+    <div class="col-md-4">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Tasks
+            </h6>
+
+            <h2>
+                {{ total_tasks }}
+            </h2>
+
+            <a
+                href="{{ url_for('main.tasks') }}"
+                class="btn btn-sm btn-outline-primary mt-2">
+
+                View Tasks
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Active Projects -->
+
+    <div class="col-md-4">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Active Projects
+            </h6>
+
+            <h2>
+                {{ active_projects }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row g-4 mb-4">
+
+    <!-- Completed -->
+
+    <div class="col-md-6">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Completed Tasks
+            </h6>
+
+            <h2>
+                {{ completed_tasks }}
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pending -->
+
+    <div class="col-md-6">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Pending Tasks
+            </h6>
+
+            <h2>
+                {{ pending_tasks }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MANAGER RECENT TASKS ================= -->
+
+<div class="dashboard-section mb-4">
+
+    <h3>
+        Recent Tasks
+    </h3>
+
+    <p class="text-muted">
+        Latest workspace tasks.
+    </p>
+
+
+    {% if recent_tasks %}
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>Task</th>
+                    <th>Project</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for task in recent_tasks %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ task.title }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        {% if task.project %}
+                            {{ task.project.name }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ task.priority }}
+                    </td>
+
+
+                    <td>
+                        {{ task.status }}
+                    </td>
+
+
+                    <td>
+                        {{ task.deadline or "—" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <p class="text-muted">
+        No tasks available.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- ================= EMPLOYEE DASHBOARD ============= -->
+<!-- ================================================= -->
+
+{% else %}
+
+<div class="alert alert-success">
+
+    <strong>Employee Dashboard</strong>
+
+    <br>
+
+    Here you can track your assigned tasks and progress.
+
+</div>
+
+
+<!-- ================= EMPLOYEE CARDS ================= -->
+
+<div class="row g-4 mb-4">
+
+    <!-- My Tasks -->
+
+    <div class="col-md-4">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                My Tasks
+            </h6>
+
+            <h2>
+                {{ total_tasks }}
+            </h2>
+
+            <a
+                href="{{ url_for('main.my_tasks') }}"
+                class="btn btn-sm btn-outline-primary mt-2">
+
+                View My Tasks
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Completed -->
+
+    <div class="col-md-4">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Completed
+            </h6>
+
+            <h2>
+                {{ completed_tasks }}
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pending -->
+
+    <div class="col-md-4">
+
+        <div class="dashboard-section">
+
+            <h6 class="text-muted">
+                Pending
+            </h6>
+
+            <h2>
+                {{ pending_tasks }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= EMPLOYEE RECENT TASKS ================= -->
+
+<div class="dashboard-section mb-4">
+
+    <h3>
+        My Recent Tasks
+    </h3>
+
+    <p class="text-muted">
+        Tasks assigned to you.
+    </p>
+
+
+    {% if recent_tasks %}
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>Task</th>
+                    <th>Project</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for task in recent_tasks %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ task.title }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        {% if task.project %}
+                            {{ task.project.name }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ task.priority }}
+                    </td>
+
+
+                    <td>
+                        {{ task.status }}
+                    </td>
+
+
+                    <td>
+                        {{ task.deadline or "—" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="text-center py-4">
+
+        <h5>
+            No tasks assigned
+        </h5>
+
+        <p class="text-muted">
+            You don't have any tasks assigned yet.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endif %}
+
+
+<!-- ================================================= -->
+<!-- ================= UPCOMING TASKS ================= -->
+<!-- ================================================= -->
+
+<div class="dashboard-section mb-4">
+
+    <h3>
+        Upcoming Tasks
+    </h3>
+
+    <p class="text-muted">
+        Tasks with the nearest deadlines.
+    </p>
+
+
+    {% if upcoming_tasks %}
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>Task</th>
+                    <th>Project</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for task in upcoming_tasks %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ task.title }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+
+                        {% if task.project %}
+                            {{ task.project.name }}
+                        {% else %}
+                            —
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ task.priority }}
+                    </td>
+
+
+                    <td>
+                        {{ task.status }}
+                    </td>
+
+
+                    <td>
+                        {{ task.deadline or "—" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <p class="text-muted">
+        No upcoming tasks.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- ================================================= -->
+<!-- ================= QUICK ACTIONS ================= -->
+<!-- ================================================= -->
+
+<div class="dashboard-section">
+
+    <h3>
+        Quick Actions
+    </h3>
+
+    <p class="text-muted">
+        Quickly access your workspace.
+    </p>
+
+
+    <div class="d-flex gap-2 flex-wrap">
+
+
+        {% if session.get("role", "")|lower in ["admin", "manager"] %}
+
+        <a
+            href="{{ url_for('main.create_project') }}"
+            class="btn btn-primary">
+
+            + Create Project
+
+        </a>
+
+
+        <a
+            href="{{ url_for('main.create_task') }}"
+            class="btn btn-success">
+
+            + Create Task
+
+        </a>
+
+        {% endif %}
+
+
+        <a
+            href="{{ url_for('main.my_tasks') }}"
+            class="btn btn-outline-primary">
+
+            My Tasks
+
+        </a>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Profile | WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                My Profile
+            </h2>
+
+            <p class="text-muted mb-0">
+                View your WorkFlowX account and task information.
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- Profile Card -->
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <!-- Avatar -->
+                    <div
+                        class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+                        style="width:90px;height:90px;font-size:36px;">
+
+                        {{ user.name[0]|upper }}
+
+                    </div>
+
+                    <h4 class="fw-bold mb-1">
+                        {{ user.name }}
+                    </h4>
+
+                    <p class="text-muted mb-3">
+                        {{ user.email }}
+                    </p>
+
+                    <span class="badge bg-dark px-3 py-2">
+                        {{ user.role|capitalize }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Account Information -->
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-white border-0 pt-4 px-4">
+
+                    <h5 class="fw-bold mb-0">
+                        Account Information
+                    </h5>
+
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Full Name
+                            </label>
+
+                            <div class="fw-semibold">
+                                {{ user.name }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Email Address
+                            </label>
+
+                            <div class="fw-semibold">
+                                {{ user.email }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                Role
+                            </label>
+
+                            <div class="fw-semibold">
+                                {{ user.role|capitalize }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <label class="text-muted small">
+                                User ID
+                            </label>
+
+                            <div class="fw-semibold">
+                                #{{ user.id }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Task Statistics -->
+
+            <div class="row g-3 mt-1">
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body">
+
+                            <p class="text-muted mb-1">
+                                Assigned Tasks
+                            </p>
+
+                            <h3 class="fw-bold mb-0">
+                                {{ total_tasks }}
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body">
+
+                            <p class="text-muted mb-1">
+                                Completed
+                            </p>
+
+                            <h3 class="fw-bold text-success mb-0">
+                                {{ completed_tasks }}
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="card border-0 shadow-sm">
+
+                        <div class="card-body">
+
+                            <p class="text-muted mb-1">
+                                Pending
+                            </p>
+
+                            <h3 class="fw-bold text-warning mb-0">
+                                {{ pending_tasks }}
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Employee Information -->
+
+    <div class="card border-0 shadow-sm mt-4">
+
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">
+                WorkFlowX Account
+            </h5>
+
+            <p class="text-muted mb-0">
+
+                This profile contains your basic account information
+                and task activity inside the WorkFlowX workspace.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,167 @@
+ {% extends "base.html" %}
+
+{% block title %}
+Create Project | WorkFlowX
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1>Create Project</h1>
+
+        <p class="text-muted">
+            Create a new project for your organization.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('main.projects') }}"
+        class="btn btn-outline-secondary">
+
+        ← Back to Projects
+
+    </a>
+
+</div>
+
+
+<div class="dashboard-section">
+
+    <form
+        method="POST"
+        action="{{ url_for('main.create_project') }}">
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}">
+
+        <!-- PROJECT NAME -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Project Name
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                placeholder="Enter project name"
+                required>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Description
+            </label>
+
+            <textarea
+                name="description"
+                class="form-control"
+                rows="4"
+                placeholder="Enter project description"></textarea>
+
+        </div>
+
+
+        <div class="row">
+
+            <!-- START DATE -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Start Date
+                </label>
+
+                <input
+                    type="date"
+                    name="start_date"
+                    class="form-control">
+
+            </div>
+
+
+            <!-- DEADLINE -->
+
+            <div class="col-md-6 mb-3">
+
+                <label class="form-label">
+                    Deadline
+                </label>
+
+                <input
+                    type="date"
+                    name="deadline"
+                    class="form-control">
+
+            </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Status
+            </label>
+
+            <select
+                name="status"
+                class="form-select">
+
+                <option value="PLANNED">
+                    Planned
+                </option>
+
+                <option value="ACTIVE">
+                    Active
+                </option>
+
+                <option value="COMPLETED">
+                    Completed
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="d-flex gap-2">
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+
+                Create Project
+
+            </button>
+
+            <a
+                href="{{ url_for('main.projects') }}"
+                class="btn btn-outline-secondary">
+
+                Cancel
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
